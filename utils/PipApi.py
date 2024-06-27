@@ -1,5 +1,8 @@
 import subprocess
 
+import requests
+from bs4 import BeautifulSoup
+
 
 class PipApi:
     """
@@ -8,6 +11,7 @@ class PipApi:
 
     def __init__(self):
         self.pip = 'pip'
+        self.pip_url = 'https://pypi.org/simple'
 
     def get_pip_list(self):
         """
@@ -31,7 +35,27 @@ class PipApi:
 
         return packages
 
+    def get_py_packages(self):
+        """
+        获取py包列表
+        :return: 列表
+        """
+        response = requests.get(self.pip_url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            package_list = []
+            for link in soup.find_all('a', href=True):
+                package_name = link['href'].split('/')[-2]
+                package_list.append(package_name)
+            return package_list
+        else:
+            return None
+
 
 if __name__ == "__main__":
     pipApi = PipApi()
-    print(pipApi.get_pip_list())
+    packages = pipApi.get_py_packages()
+    if packages:
+        print(packages[:10])
+    else:
+        print("无法获取包列表")
