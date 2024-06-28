@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-from pages.Browse import Browse
+from pages.Local import Local
 
 # 初始化主窗口
 root = ttk.Window(themename="cosmo", alpha=0.95)
@@ -10,16 +10,22 @@ root.geometry("800x600")
 
 root.place_window_center()
 
-notebook_titles = ["浏览", "已安装", "更新"]
+notebook_titles = ["本地", "远程", "设置", "关于"]
+
+# 本地：用于浏览，操作本地的py包，可以进行查看，搜索，卸载，升级等功能
+# 远程：用于获取可安装的py包，可以进行查看，搜索，安装等功能
+# 设置：设置python环境，pip镜像，语言等
+# 关于：关于PiPManager
+
 note = ttk.Notebook()
-note.pack(fill=BOTH, side=TOP, ipady=250)
+note.pack(fill=BOTH, expand=True)  # 修改为全局填充
 
 for title in notebook_titles:
     frame = ttk.Frame(note)
     note.add(frame, text=title)
 
-    if title == "浏览":
-        Browse(frame).get_browse()
+    if title == "本地":
+        Local(frame).get_local()
 
 root.mainloop()
 
