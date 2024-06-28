@@ -4,21 +4,11 @@ from ttkbootstrap.constants import *
 from pages.Browse import Browse
 
 # 初始化主窗口
-root = ttk.Window(themename="flatly")
-root.title("PipManager")
+root = ttk.Window(themename="cosmo", alpha=0.95)
+root.title("PiPManager")
 root.geometry("800x600")
 
-root.update_idletasks()  # 确保窗口信息已更新
-width = root.winfo_width()
-height = root.winfo_height()
-
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
-
-x = (screen_width - width) // 2
-y = (screen_height - height) // 2 - 50
-
-root.geometry(f"{width}x{height}+{x}+{y}")
+root.place_window_center()
 
 notebook_titles = ["浏览", "已安装", "更新"]
 note = ttk.Notebook()
