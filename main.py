@@ -1,17 +1,59 @@
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
-# 创建主窗口
-root = ttk.Window(themename="superhero")
-root.title("TTKBootstrap Example")
-root.geometry("300x200")
+# 初始化主窗口
+root = ttk.Window(themename="flatly")
+root.title("PipManager")
+root.geometry("800x600")
 
-# 添加一个标签
-label = ttk.Label(root, text="Hello", font=("Helvetica", 16))
-label.pack(pady=20)
+# 创建顶部的工具栏
+toolbar = ttk.Frame(root)
+toolbar.pack(side=TOP, fill=X)
 
-# 添加一个按钮
-button = ttk.Button(root, text="Click Me")
-button.pack(pady=10)
+# 侧边栏
+sidebar = ttk.Frame(root)
+sidebar.pack(side=LEFT, fill=Y)
 
-# 运行主循环
+# 搜索框
+search_frame = ttk.Frame(toolbar)
+search_frame.pack(side=LEFT, padx=10)
+# search_icon = PhotoImage(file='search_icon.png')  # 使用一个搜索图标
+# search_label = ttk.Label(search_frame, image=search_icon)
+
+# search_label.pack(side=LEFT)
+search_entry = ttk.Entry(search_frame)
+search_entry.pack(side=LEFT, padx=5)
+
+# 标签
+notebook_titles = ["浏览", "已安装", "更新"]
+note = ttk.Notebook()
+note.pack(side=TOP, ipadx=100, ipady=150)
+
+for title in notebook_titles:
+    note.add(ttk.Frame(), text=title)
+
+# 选项下拉菜单
+more_button = ttk.Menubutton(toolbar, text="选项", bootstyle="light")
+more_button.pack(side=RIGHT, padx=10)
+menu = ttk.Menu(more_button)
+option_var = ttk.StringVar()
+
+more_button_options = ["选项1", "选项2", "选项3"]
+for option in more_button_options:
+    menu.add_radiobutton(label=option, value=option, variable=option_var)
+more_button['menu'] = menu
+
+# 左侧分类栏
+sidebar = ttk.Frame(sidebar)
+sidebar.pack(side=LEFT, fill=Y, padx=5)
+
+categories = ["分类", "组", "仓库"]
+for category in categories:
+    cat_frame = ttk.Frame(sidebar)
+    cat_frame.pack(pady=10)
+    cat_label = ttk.Label(cat_frame, text=category, bootstyle="info")
+    cat_label.pack(side=LEFT)
+    cat_arrow = ttk.Label(cat_frame, text="➔", bootstyle="info")
+    cat_arrow.pack(side=RIGHT)
+
 root.mainloop()
