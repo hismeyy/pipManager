@@ -137,7 +137,7 @@ class PipApi:
 
         return self.py_package_list
 
-    def get_package_versions(self, package_name):
+    def get_package_versions_api(self, package_name):
         """
         获取可安装包的版本号
         :param package_name:
@@ -161,6 +161,32 @@ class PipApi:
             print(f"Error retrieving package information: {e}")
             return None
 
+    def uninstall_package_api(self, package_name):
+        """
+        卸载指定的pip包
+        :param package_name:
+        :return:
+        """
+        result = subprocess.run([self.pip, 'uninstall', '-y', package_name], capture_output=True, text=True)
+
+        if result.returncode == 0:
+            return f"Package '{package_name}' uninstalled successfully."
+        else:
+            return f"Failed to uninstall package '{package_name}'. Error: {result.stderr.strip()}"
+
+    def install_package_api(self, package_name):
+        """
+        安装指定的pip包
+        :param package_name:
+        :return:
+        """
+        result = subprocess.run([self.pip, 'install', package_name], capture_output=True, text=True)
+
+        if result.returncode == 0:
+            return f"Package '{package_name}' installed successfully."
+        else:
+            return f"Failed to install package '{package_name}'. Error: {result.stderr.strip()}"
+
 
 if __name__ == "__main__":
     pipApi = PipApi()
@@ -171,9 +197,5 @@ if __name__ == "__main__":
     #     print("无法获取包列表")
 
     # 示例用法
-    package_name = 'pyinstaller'  # 替换为你要查询的包名
-    versions = pipApi.get_package_versions(package_name)
-    if versions:
-        print(f"Versions of {package_name}: {versions}")
-    else:
-        print(f"Package {package_name} not found.")
+    list = pipApi.uninstall_package_api("pyinstaller")
+    print(list)
