@@ -1,4 +1,5 @@
 import subprocess
+import threading
 
 import requests
 from bs4 import BeautifulSoup
@@ -35,12 +36,13 @@ class PipApi:
 
         return packages
 
-    def get_py_packages(self):
+    @staticmethod
+    def __get_py_package(pip_url):
         """
         获取py包列表
         :return: 列表
         """
-        response = requests.get(self.pip_url)
+        response = requests.get(pip_url)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             package_list = []
@@ -50,6 +52,17 @@ class PipApi:
             return package_list
         else:
             return None
+
+    def get_py_packages(self):
+
+        def get_py_package_thread_method():
+            self.result = self.__get_py_package(self.pip_url)
+
+        # 开启一个多线程获取数据
+        get_py_package_thread = threading.Thread(target=get_py_package_thread_method)
+        get_py_package_thread.start()
+        get_py_package_thread.join()
+        return self.result
 
 
 if __name__ == "__main__":
