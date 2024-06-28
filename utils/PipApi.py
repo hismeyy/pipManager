@@ -137,11 +137,43 @@ class PipApi:
 
         return self.py_package_list
 
+    def get_package_versions(self, package_name):
+        """
+        获取可安装包的版本号
+        :param package_name:
+        :return:
+        """
+        try:
+            # 使用 PyPI 的 JSON API 查询包信息
+            url = f'https://pypi.org/pypi/{package_name}/json'
+            response = requests.get(url)
+            response.raise_for_status()  # 确保请求成功
+
+            # 解析 JSON 数据
+            package_data = response.json()
+            versions = list(package_data['releases'].keys())
+
+            # 对版本号进行排序（从大到小）
+            versions_sorted = sorted(versions, key=lambda x: tuple(int(v) if v.isdigit() else v for v in x.split('.')),
+                                     reverse=True)
+            return versions_sorted
+        except requests.exceptions.RequestException as e:
+            print(f"Error retrieving package information: {e}")
+            return None
+
 
 if __name__ == "__main__":
     pipApi = PipApi()
-    packages = pipApi.get_py_package_list_api()
-    if packages:
-        print(packages[:10])
+    # packages = pipApi.get_py_package_list_api()
+    # if packages:
+    #     print(packages[:10])
+    # else:
+    #     print("无法获取包列表")
+
+    # 示例用法
+    package_name = 'pyinstaller'  # 替换为你要查询的包名
+    versions = pipApi.get_package_versions(package_name)
+    if versions:
+        print(f"Versions of {package_name}: {versions}")
     else:
-        print("无法获取包列表")
+        print(f"Package {package_name} not found.")
