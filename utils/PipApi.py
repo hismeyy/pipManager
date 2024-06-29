@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import threading
 from datetime import datetime
@@ -33,10 +34,7 @@ class PipApi:
             parts = line.split()
             name = parts[0]
             version = parts[1]
-            packages.append({
-                'name': name,
-                'version': version
-            })
+            packages.append((name, version))
 
         return packages
 
@@ -137,6 +135,15 @@ class PipApi:
 
         return self.py_package_list
 
+    def version_key(self, version):
+        # 分割版本号成各个部分，使用正则表达式匹配数字和字母
+        parts = re.split(r'(\d+)', version)
+        # 将数字部分转换为整数，字母部分保持为字符串
+        return [int(part) if part.isdigit() else part for part in parts]
+
+    def sort_versions(self, versions):
+        return sorted(versions, key=self.version_key, reverse=True)
+
     def get_package_versions_api(self, package_name):
         """
         获取可安装包的版本号
@@ -154,8 +161,8 @@ class PipApi:
             versions = list(package_data['releases'].keys())
 
             # 对版本号进行排序（从大到小）
-            versions_sorted = sorted(versions, key=lambda x: tuple(int(v) if v.isdigit() else v for v in x.split('.')),
-                                     reverse=True)
+            versions_sorted = self.sort_versions(versions)
+
             return versions_sorted
         except requests.exceptions.RequestException as e:
             print(f"Error retrieving package information: {e}")
