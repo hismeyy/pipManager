@@ -16,6 +16,12 @@ class About:
             ("许可证:", "GPL（GNU General Public License）")
         ]
 
+        # 更新日志
+        changelog = [
+            "1.0.0 初始发布。",
+            # 添加更多更新日志
+        ]
+
         # 添加软件信息标签
         for i, (label, text) in enumerate(info):
             ttk.Label(self.frame, text=label, font=("Helvetica", 10, "bold")).grid(row=i, column=0, sticky=tk.W,
@@ -32,22 +38,25 @@ class About:
         link.bind("<Button-1>", lambda e: webbrowser.open_new("https://github.com/hismeyy/pipManager"))
 
         # 添加版权声明标签
-        copyright_row = dev_info_row + 2
+        copyright_row = dev_info_row + 1
         ttk.Label(self.frame, text="版权声明:", font=("Helvetica", 10, "bold")).grid(row=copyright_row, column=0,
                                                                                      sticky=tk.W, padx=10, pady=5)
         ttk.Label(self.frame, text="© 2024 MaxCosmos 和 Fang. 保留所有权利。", font=("Helvetica", 10)).grid(
             row=copyright_row, column=1, sticky=tk.W, padx=10, pady=5)
 
-        # 添加更新日志标签
-        changelog_row = copyright_row + 1
-        ttk.Label(self.frame, text="更新日志:", font=("Helvetica", 10, "bold")).grid(row=changelog_row, column=0,
-                                                                                     sticky=tk.W, padx=10, pady=5)
-        ttk.Label(self.frame, text="版本 1.0.0 - 初始发布", font=("Helvetica", 10)).grid(row=changelog_row, column=1,
-                                                                                         sticky=tk.W, padx=10, pady=5)
-
         # 添加感谢名单标签
-        thanks_row = changelog_row + 1
+        thanks_row = copyright_row + 1
         ttk.Label(self.frame, text="感谢名单:", font=("Helvetica", 10, "bold")).grid(row=thanks_row, column=0,
                                                                                      sticky=tk.W, padx=10, pady=5)
         ttk.Label(self.frame, text="感谢所有为PiPManager开发做出贡献的人员和组织。", font=("Helvetica", 10)).grid(
             row=thanks_row, column=1, sticky=tk.W, padx=10, pady=5)
+
+        # 添加更新日志标签
+        changelog_row = thanks_row + 1
+        ttk.Label(self.frame, text="更新日志:", font=("Helvetica", 10, "bold")).grid(row=changelog_row, column=0,
+                                                                                     sticky=tk.W, padx=10, pady=5)
+
+        for i, desc in enumerate(changelog):
+            ttk.Label(self.frame, text=desc, font=("Helvetica", 10)).grid(row=changelog_row + i,
+                                                                          column=1, sticky=tk.W, padx=10,
+                                                                          pady=5)
