@@ -1,6 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
+from pages.About import About
 from pages.Local import Local
 
 # 初始化主窗口
@@ -27,6 +28,8 @@ for title in notebook_titles:
 
     if title == "本地":
         Local(frame).get_local()
+    elif title == '关于':
+        About(frame).get_about()
 
 root.mainloop()
 
