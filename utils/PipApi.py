@@ -187,15 +187,26 @@ class PipApi:
         else:
             return f"Failed to install package '{package_name}'. Error: {result.stderr.strip()}"
 
+    def show_package_info_api(self, package_name):
+        """
+        查看指定包的信息
+        :param package_name:
+        :return:
+        """
+        result = subprocess.run([self.pip, 'show', package_name], capture_output=True, text=True)
+
+        return result.stdout
+
 
 if __name__ == "__main__":
     pipApi = PipApi()
-    # packages = pipApi.get_py_package_list_api()
+    packages = pipApi.show_package_info_api("pip")
+    print(packages)
     # if packages:
     #     print(packages[:10])
     # else:
     #     print("无法获取包列表")
 
     # 示例用法
-    list = pipApi.uninstall_package_api("pyinstaller")
-    print(list)
+    # list = pipApi.uninstall_package_api("pyinstaller")
+    # print(list)
