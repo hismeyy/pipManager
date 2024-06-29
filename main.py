@@ -6,7 +6,7 @@ from pages.Local import Local
 # 初始化主窗口
 root = ttk.Window(themename="cosmo", alpha=0.95)
 root.title("PiPManager")
-root.geometry("800x600")
+root.geometry("600x500")
 
 root.place_window_center()
 
