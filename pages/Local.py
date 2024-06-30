@@ -10,6 +10,9 @@ class Local:
     def __init__(self, frame):
         self.pip_api = PipApi()
         self.frame = frame
+        self.uninstall_button = ttk.Button(self.frame, text="卸载", command=self.uninstall)
+        self.update_button = ttk.Button(self.frame, text="更新")
+        self.py_list = ttk.Treeview(self.frame, columns=("c1", "c2", "c3"), show="headings")
 
     def set_py_list(self, py_list):
         """
@@ -37,13 +40,13 @@ class Local:
         def get_package_version_last_and_update_list_thread_method(package_name, new_values, item_id):
             package_version_last = self.get_package_version_last(package_name)
             new_values.append(package_version_last)
-            py_list.item(item_id, values=new_values)
+            self.py_list.item(item_id, values=new_values)
 
         # 获取所有行的item ID
-        items = py_list.get_children()
+        items = self.py_list.get_children()
         for item_id in items:
             # 假设我们要修改第一个item的第3列元素
-            current_values = py_list.item(item_id, "values")
+            current_values = self.py_list.item(item_id, "values")
 
             # 修改第3列元素（索引为2）
             new_values = list(current_values)
@@ -54,6 +57,25 @@ class Local:
                 args=(current_values[0], new_values, item_id))
             get_package_version_last_and_update_list_thread.start()
 
+    def uninstall(self):
+        """
+        卸载
+        :return:
+        """
+
+        def uninstall_thread_method(package_name, item_id):
+            self.pip_api.uninstall_package_api(package_name)
+            self.py_list.delete(item_id)
+
+        # 获取选中的行
+        item_ids = self.py_list.selection()
+        if len(item_ids) == 0:
+            return
+        for item_id in item_ids:
+            name = self.py_list.item(item_id, "values")[0]
+            uninstall_thread = threading.Thread(target=uninstall_thread_method, args=(name, item_id))
+            uninstall_thread.start()
+
     def get_local(self):
         # 在框架中添加标签和按钮示例
 
@@ -62,33 +84,29 @@ class Local:
         # 2. grid() 布局管理器
         # 3. place() 布局管理器
 
-        uninstall_button = ttk.Button(self.frame, text="卸载")
-        update_button = ttk.Button(self.frame, text="更新")
-
         # 布局按钮
-        uninstall_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        update_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        self.uninstall_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        self.update_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
         # 创建 Treeview 作为带有表头的列表框
-        py_list = ttk.Treeview(self.frame, columns=("c1", "c2", "c3"), show="headings")
-        py_list.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.py_list.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         # 设置列标题
-        py_list.heading("c1", text="软件包", anchor="w")
-        py_list.heading("c2", text="当前版本", anchor="w")
-        py_list.heading("c3", text="最高版本", anchor="w")
+        self.py_list.heading("c1", text="软件包", anchor="w")
+        self.py_list.heading("c2", text="当前版本", anchor="w")
+        self.py_list.heading("c3", text="最高版本", anchor="w")
         # 设置列宽
-        py_list.column("c1", width=150)
-        py_list.column("c2", width=150)
-        py_list.column("c3", width=150)
+        self.py_list.column("c1", width=150)
+        self.py_list.column("c2", width=150)
+        self.py_list.column("c3", width=150)
 
         def set_py_list_thread_method():
-            self.set_py_list(py_list)
+            self.set_py_list(self.py_list)
 
         set_py_list_thread = None
 
         def update_py_list_thread_method():
             set_py_list_thread.join()
-            self.update_py_list(py_list)
+            self.update_py_list(self.py_list)
 
         # 向列表中添加一些项
         set_py_list_thread = threading.Thread(target=set_py_list_thread_method)
