@@ -40,13 +40,13 @@ class Local:
         def get_package_version_last_and_update_list_thread_method(package_name, new_values, item_id):
             package_version_last = self.get_package_version_last(package_name)
             new_values.append(package_version_last)
-            self.py_list.item(item_id, values=new_values)
+            py_list.item(item_id, values=new_values)
 
         # 获取所有行的item ID
-        items = self.py_list.get_children()
+        items = py_list.get_children()
         for item_id in items:
             # 假设我们要修改第一个item的第3列元素
-            current_values = self.py_list.item(item_id, "values")
+            current_values = py_list.item(item_id, "values")
 
             # 修改第3列元素（索引为2）
             new_values = list(current_values)
