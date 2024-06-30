@@ -12,7 +12,10 @@ class Local:
         self.frame = frame
         self.uninstall_button = ttk.Button(self.frame, text="卸载", command=self.uninstall)
         self.update_button = ttk.Button(self.frame, text="更新")
+        self.processing = ttk.Label(self.frame, text=" ", foreground="red")
         self.py_list = ttk.Treeview(self.frame, columns=("c1", "c2", "c3"), show="headings")
+
+        # label.configure(text="新的文本内容")
 
     def set_py_list(self, py_list):
         """
@@ -57,24 +60,38 @@ class Local:
                 args=(current_values[0], new_values, item_id))
             get_package_version_last_and_update_list_thread.start()
 
+
     def uninstall(self):
         """
         卸载
         :return:
         """
 
-        def uninstall_thread_method(package_name, item_id):
+        def uninstall_thread_method(package_name):
             self.pip_api.uninstall_package_api(package_name)
-            self.py_list.delete(item_id)
+
+        def processing_thread_method(item_ids_and_threads):
+            for value in item_ids_and_threads:
+                value[1].join()
+                self.py_list.delete(value[0])
+            self.processing.configure(text="")
+
 
         # 获取选中的行
         item_ids = self.py_list.selection()
         if len(item_ids) == 0:
             return
+        self.processing.configure(text="正在卸载中...")
+        item_ids_and_threads = []
         for item_id in item_ids:
             name = self.py_list.item(item_id, "values")[0]
-            uninstall_thread = threading.Thread(target=uninstall_thread_method, args=(name, item_id))
+            uninstall_thread = threading.Thread(target=uninstall_thread_method, args=(name,))
+            item_ids_and_threads.append((item_id, uninstall_thread))
             uninstall_thread.start()
+
+        processing_thread = threading.Thread(target=processing_thread_method, args=(item_ids_and_threads,))
+        processing_thread.start()
+
 
     def get_local(self):
         # 在框架中添加标签和按钮示例
@@ -87,6 +104,7 @@ class Local:
         # 布局按钮
         self.uninstall_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
         self.update_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        self.processing.grid(row=0, column=1, padx=130, pady=10, sticky="w")
 
         # 创建 Treeview 作为带有表头的列表框
         self.py_list.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
