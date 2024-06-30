@@ -109,7 +109,7 @@ class Local:
         # 创建 Treeview 作为带有表头的列表框
         self.py_list.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         # 设置列标题
-        self.py_list.heading("c1", text="软件包", anchor="w")
+        self.py_list.heading("c1", text="Pip包", anchor="w")
         self.py_list.heading("c2", text="当前版本", anchor="w")
         self.py_list.heading("c3", text="最高版本", anchor="w")
         # 设置列宽
