@@ -20,7 +20,7 @@ notebook_titles = ["本地", "远程", "设置", "关于"]
 # 设置：设置python环境，pip镜像，语言等
 # 关于：关于PiPManager
 
-note = ttk.Notebook()
+note = ttk.Notebook(bootstyle="light")
 note.pack(fill=BOTH, expand=True)  # 修改为全局填充
 
 for title in notebook_titles:
