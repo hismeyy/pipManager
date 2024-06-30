@@ -1,3 +1,6 @@
+import threading
+import tkinter as tk
+
 import ttkbootstrap as ttk
 
 from utils.PipApi import PipApi
@@ -19,6 +22,16 @@ class Remote:
 
         self.version_list_combobox = ttk.Combobox(self.frame, values=["1.0.0"], state="readonly")
 
+    def set_py_list(self, py_list):
+        """
+        设置py包list
+        :param py_list:
+        :return:
+        """
+        items = self.pip_api.get_py_package_list_api()
+        for item in items:
+            py_list.insert("", tk.END, values=item)
+
     def get_remote(self):
 
         # 布局按钮
@@ -27,18 +40,26 @@ class Remote:
         self.processing.grid(row=0, column=2, padx=10, pady=10, sticky="w")
 
         # 创建 Treeview 作为带有表头的列表框
-        self.py_list.grid(row=1, column=0, columnspan=40, rowspan=3, padx=10, pady=10, sticky="nsew")
+        self.py_list.grid(row=1, column=0, columnspan=50, rowspan=3, padx=10, pady=10, sticky="nsew")
         # 设置列标题
         self.py_list.heading("c1", text="Pip包", anchor="w")
         # 设置列宽
         self.py_list.column("c1", width=300)
 
-        self.introduction_label.grid(row=1, column=41, padx=10, pady=0, sticky="nsew")
+        self.introduction_label.grid(row=1, column=51, padx=10, pady=0, sticky="nsew")
 
         self.introduction_content_label.grid(row=1, column=41, padx=10, pady=10, sticky="nw")
 
-        self.version_option_check.grid(row=2, column=41, padx=10, pady=(30, 0), sticky="sw")
-        self.version_list_combobox.grid(row=3, column=41, padx=10, pady=10, sticky="sw")
+        self.version_option_check.grid(row=2, column=51, padx=10, pady=(30, 0), sticky="sw")
+        self.version_list_combobox.grid(row=3, column=51, padx=10, pady=10, sticky="sw")
+
+        def set_py_list_thread_method():
+            self.set_py_list(self.py_list)
+
+        # 向列表中添加一些项
+        set_py_list_thread = threading.Thread(target=set_py_list_thread_method)
+        set_py_list_thread.start()
+
 
         # 设置列权重
         self.frame.columnconfigure(0, weight=0)
@@ -46,6 +67,6 @@ class Remote:
         self.frame.columnconfigure(2, weight=0)
         self.frame.columnconfigure(3, weight=0)
         self.frame.columnconfigure(3, weight=0)
-        self.frame.columnconfigure(41, weight=1)
+        self.frame.columnconfigure(51, weight=1)
 
         self.frame.rowconfigure(1, weight=1)

@@ -1,3 +1,4 @@
+import gc
 import json
 import re
 import subprocess
@@ -17,7 +18,7 @@ class PipApi:
         self.pip = 'pip'
         self.pip_url = 'https://pypi.org/simple'
         self.py_package_list = []
-        self.file_path = '../data/py_package.cache'
+        self.file_path = './data/py_package.cache'
 
     def get_pip_list_api(self):
         """
@@ -110,6 +111,7 @@ class PipApi:
             get_py_package_thread.join()
             if len(self.py_package_list) != 0:
                 self.__write_py_packages_cache(self.py_package_list, self.file_path)
+                gc.collect(generation=2)
 
         get_py_package_thread = threading.Thread(target=get_py_package_thread_method)
         get_py_package_thread.start()
