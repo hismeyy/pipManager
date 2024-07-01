@@ -45,16 +45,27 @@ class PipApi:
         请求py包列表
         :return: 列表
         """
-        response = requests.get(pip_url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            package_list = []
-            for link in soup.find_all('a', href=True):
-                package_name = link['href'].split('/')[-2]
-                package_list.append(package_name)
-            return package_list
-        else:
-            return None
+        try:
+            response = requests.get(pip_url, stream=True)
+
+            if response.status_code == 200:
+                package_list = []
+
+                # 使用 iter_content 分块处理响应数据
+                for chunk in response.iter_content(chunk_size=2048):
+                    # 部分解析HTML
+                    soup = BeautifulSoup(chunk, 'html.parser')
+                    for link in soup.find_all('a', href=True):
+                        package_name = link.get_text(strip=True)
+                        package_list.append(package_name)
+
+                return package_list
+            else:
+                print(f"Failed to retrieve data. Status code: {response.status_code}")
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching data: {e}")
+        return None
 
     @staticmethod
     def get_now_date():
@@ -209,13 +220,4 @@ class PipApi:
 
 if __name__ == "__main__":
     pipApi = PipApi()
-    packages = pipApi.show_package_info_api("pip")
-    print(packages)
-    # if packages:
-    #     print(packages[:10])
-    # else:
-    #     print("无法获取包列表")
-
-    # 示例用法
-    # list = pipApi.uninstall_package_api("pyinstaller")
-    # print(list)
+    pipApi.test()
