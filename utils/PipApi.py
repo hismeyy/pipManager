@@ -1,5 +1,6 @@
 import gc
-import json
+import os
+import pickle
 import re
 import subprocess
 import threading
@@ -84,14 +85,11 @@ class PipApi:
         :param file_path:
         :return:
         """
-        cache = {
-            "date": PipApi.get_now_date(),
-            "packages": py_package_list
-        }
+        py_package_list.append(PipApi.get_now_date())
 
-        cache_json = json.dumps(cache)
-        with open(file_path, "w") as file:
-            file.write(cache_json)
+        # 将列表保存到文件中
+        with open(file_path, 'wb') as f:
+            pickle.dump(py_package_list, f)
 
     @staticmethod
     def __read_py_packages_cache(file_path):
@@ -100,13 +98,19 @@ class PipApi:
         :param file_path:
         :return:
         """
-        try:
-            with open(file_path, "r") as file:
-                cache_json = file.read()
-                cache = json.loads(cache_json)
-                return cache["date"], cache["packages"]
-        except FileNotFoundError:
-            return None, []
+        if not os.path.exists(file_path):
+            # 文件不存在，处理错误或创建空文件
+            with open(file_path, 'wb') as f:
+                # 写入空内容或默认内容
+                pickle.dump([], f)
+
+        with open(file_path, 'rb') as f:
+            py_package_list = pickle.load(f)
+            if len(py_package_list) != 0:
+                data = py_package_list.pop()
+                return data, py_package_list
+            else:
+                return None, []
 
     def get_py_packages_and_write_cache(self):
         """

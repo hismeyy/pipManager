@@ -14,6 +14,10 @@ class Local:
         self.update_button = ttk.Button(self.frame, text="更新")
         self.processing = ttk.Label(self.frame, text=" ", foreground="red")
         self.py_list = ttk.Treeview(self.frame, columns=("c1", "c2", "c3"), show="headings")
+        vsb = ttk.Scrollbar(self.py_list, orient="vertical", command=self.py_list.yview,
+                            style="Modern.Vertical.TScrollbar1")
+        vsb.pack(side="right", fill="y")
+        self.py_list.configure(yscrollcommand=vsb.set)
 
         # label.configure(text="新的文本内容")
 
@@ -60,7 +64,6 @@ class Local:
                 args=(current_values[0], new_values, item_id))
             get_package_version_last_and_update_list_thread.start()
 
-
     def uninstall(self):
         """
         卸载
@@ -76,7 +79,6 @@ class Local:
                 self.py_list.delete(value[0])
             self.processing.configure(text="")
 
-
         # 获取选中的行
         item_ids = self.py_list.selection()
         if len(item_ids) == 0:
@@ -91,7 +93,6 @@ class Local:
 
         processing_thread = threading.Thread(target=processing_thread_method, args=(item_ids_and_threads,))
         processing_thread.start()
-
 
     def get_local(self):
         # 在框架中添加标签和按钮示例
