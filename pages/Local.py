@@ -27,7 +27,7 @@ class Local:
         self.py_list.column("c1", width=150)
         self.py_list.column("c2", width=150)
         self.py_list.column("c3", width=150)
-        # 使得列自动扩展以填满空白区域
+        # 设置行列权重
         self.frame.columnconfigure(0, weight=0)
         self.frame.columnconfigure(1, weight=1)
         self.frame.rowconfigure(1, weight=1)

@@ -14,6 +14,20 @@ root.geometry("600x500")
 root.minsize(600, 500)
 root.place_window_center()
 
+style = ttk.Style()
+style.configure("Modern.Vertical.TScrollbar",
+                gripcount=0,
+                background="#f0f0f0",  # 背景颜色
+                troughcolor="#d0d0d0",  # 槽颜色
+                bordercolor="#b0b0b0",  # 边框颜色
+                arrowcolor="#606060",  # 箭头颜色
+                darkcolor="#a0a0a0",  # 鼠标悬停时的颜色
+                lightcolor="#ffffff",  # 滚动条被点击时的颜色
+                width=10,  # 宽度
+                margin=5,  # 边距
+                troughrelief="flat"  # 槽的浮雕效果设置为平的
+                )
+
 notebook_titles = ["本地", "远程", "设置", "关于"]
 
 # 本地：用于浏览，操作本地的py包，可以进行查看，搜索，卸载，升级等功能
@@ -33,10 +47,13 @@ for title in notebook_titles:
         local_thread = threading.Thread(target=local.get_local)
         local_thread.start()
     elif title == '远程':
-        Remote(frame).get_remote()
+        remote = Remote(frame)
+        remote_thread = threading.Thread(target=remote.get_remote())
+        remote_thread.start()
     elif title == '设置':
         pass
     elif title == '关于':
-        About(frame).get_about()
+        pass
+        # About(frame).get_about()
 
 root.mainloop()
