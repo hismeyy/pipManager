@@ -3,6 +3,7 @@ import threading
 import tkinter as tk
 
 import ttkbootstrap as ttk
+from ttkbootstrap import PRIMARY
 
 from utils.PipApi import PipApi
 
@@ -13,9 +14,11 @@ class Remote:
         self.frame = frame
         # 组件
         self.install_button = ttk.Button(self.frame, text="安装")
+        self.search_button = ttk.Button(self.frame, text="搜索")
         self.processing = ttk.Label(self.frame, text="", foreground="red")
-        self.py_list = ttk.Treeview(self.frame, columns="c1", show="headings")
+        self.entry = ttk.Entry(self.frame, width=30, style=PRIMARY)
 
+        self.py_list = ttk.Treeview(self.frame, columns="c1", show="headings")
         self.vsb = ttk.Scrollbar(self.py_list, orient="vertical", command=self.py_list.yview)
 
         self.introduction_label = ttk.LabelFrame(self.frame, text="简介")
@@ -25,24 +28,28 @@ class Remote:
 
         # 布局
         self.install_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        self.processing.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        self.search_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        self.entry.grid(row=0, column=2, padx=10, pady=10, sticky="w")
+        self.processing.grid(row=0, column=3, padx=10, pady=10, sticky="w")
 
-        self.py_list.grid(row=1, column=0, columnspan=2, rowspan=3, padx=10, pady=10, sticky="nsew")
+        self.py_list.grid(row=1, column=0, columnspan=4, rowspan=3, padx=10, pady=10, sticky="nsew")
         self.py_list.heading("c1", text="Pip包", anchor="w")
         self.py_list.column("c1", width=200)
         self.vsb.pack(side="right", fill="y")
 
-        self.introduction_label.grid(row=1, column=2, padx=10, pady=0, sticky="nsew")
-        self.introduction_content_label.grid(row=1, column=2, padx=10, pady=10, sticky="nw")
-        self.version_option_check.grid(row=2, column=2, padx=10, pady=(30, 0), sticky="sw")
-        self.version_list_combobox.grid(row=3, column=2, padx=10, pady=10, sticky="sw")
+        self.introduction_label.grid(row=1, column=4, padx=10, pady=0, sticky="nsew")
+        self.introduction_content_label.grid(row=1, column=4, padx=10, pady=10, sticky="nw")
+        self.version_option_check.grid(row=2, column=4, padx=10, pady=(30, 0), sticky="sw")
+        self.version_list_combobox.grid(row=3, column=4, padx=10, pady=10, sticky="sw")
 
         self.py_list.configure(yscrollcommand=self.vsb.set)
         # 设置行列权重
+        self.frame.rowconfigure(0, weight=0)
         self.frame.columnconfigure(0, weight=0)
-        self.frame.columnconfigure(1, weight=1)
-        self.frame.columnconfigure(2, weight=1)
-        self.frame.columnconfigure(3, weight=0)
+        self.frame.columnconfigure(1, weight=0)
+        self.frame.columnconfigure(2, weight=0)
+        self.frame.columnconfigure(3, weight=1)
+        self.frame.columnconfigure(4, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
         self.queue = queue.Queue()
@@ -57,6 +64,7 @@ class Remote:
         while not self.queue.empty():
             item = self.queue.get()
             self.py_list.insert("", tk.END, values=item)
+        self.frame.after(100, self.set_py_list)
 
     def get_py_list(self):
         """

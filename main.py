@@ -39,6 +39,7 @@ class MainWin():
         for title in self.notebook_titles:
             frame = ttk.Frame(self.note)
             self.note.add(frame, text=title)
+
             if title == "本地":
                 local = Local(frame)
                 local_thread = threading.Thread(target=local.get_local)
@@ -63,7 +64,7 @@ class MainWin():
         self.close_waiting_window()
 
     def show_waiting_window(self):
-        self.waiting_window = ttk.Toplevel(self.root)
+        self.waiting_window = ttk.Toplevel()
         self.waiting_window.title("请稍等")
         self.waiting_window.geometry("200x20")
         self.waiting_window.overrideredirect(True)  # 去掉窗口边框
