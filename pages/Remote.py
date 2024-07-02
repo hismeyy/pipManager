@@ -13,7 +13,7 @@ class Remote:
         # 组件
         self.install_button = ttk.Button(self.frame, text="安装")
         self.refresh_button = ttk.Button(self.frame, text="刷新")
-        self.processing = ttk.Label(self.frame, text="提示信息...", foreground="red")
+        self.processing = ttk.Label(self.frame, text="", foreground="red")
         self.py_list = ttk.Treeview(self.frame, columns="c1", show="headings")
         self.introduction_label = ttk.LabelFrame(self.frame, text="简介")
         self.introduction_content_label = ttk.Label(self.introduction_label, text="这是一个简介")
@@ -51,7 +51,9 @@ class Remote:
         items = self.pip_api.get_py_package_list_api()
         for item in items:
             self.py_list.insert("", tk.END, values=item)
+        self.processing.configure(text="")
 
     def get_remote(self):
+        self.processing.configure(text="正在加载数据...")
         set_py_list_thread = threading.Thread(target=self.set_py_list)
         set_py_list_thread.start()
