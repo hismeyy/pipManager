@@ -8,7 +8,7 @@ from pages.Local import Local
 from pages.Remote import Remote
 
 # 初始化主窗口
-root = ttk.Window(themename="cosmo", alpha=0.9)
+root = ttk.Window(themename="cosmo", alpha=0.95)
 root.title("PiPManager")
 root.geometry("600x500")
 root.minsize(600, 500)
@@ -17,16 +17,15 @@ root.place_window_center()
 style = ttk.Style()
 style.configure("Modern.Vertical.TScrollbar",
                 gripcount=0,
-                background="#f0f0f0",  # 背景颜色
-                troughcolor="#d0d0d0",  # 槽颜色
-                bordercolor="#b0b0b0",  # 边框颜色
-                arrowcolor="#606060",  # 箭头颜色
-                darkcolor="#a0a0a0",  # 鼠标悬停时的颜色
-                lightcolor="#ffffff",  # 滚动条被点击时的颜色
-                width=10,  # 宽度
-                margin=5,  # 边距
-                troughrelief="flat"  # 槽的浮雕效果设置为平的
-                )
+                background="#ffffff",
+                troughcolor="#c3c3c3",
+                bordercolor="#ffffff",
+                arrowcolor="#606060",
+                darkcolor="#a0a0a0",
+                lightcolor="#ffffff",
+                width=8,
+                margin=3,
+                troughrelief="flat")
 
 notebook_titles = ["本地", "远程", "设置", "关于"]
 

@@ -26,6 +26,10 @@ class Remote:
         self.py_list.grid(row=1, column=0, columnspan=50, rowspan=3, padx=10, pady=10, sticky="nsew")
         self.py_list.heading("c1", text="Pip包", anchor="w")
         self.py_list.column("c1", width=300)
+        vsb = ttk.Scrollbar(self.py_list, orient="vertical", command=self.py_list.yview,
+                            style="Modern.Vertical.TScrollbar")
+        vsb.pack(side="right", fill="y")
+        self.py_list.configure(yscrollcommand=vsb.set)
         self.introduction_label.grid(row=1, column=51, padx=10, pady=0, sticky="nsew")
         self.introduction_content_label.grid(row=1, column=41, padx=10, pady=10, sticky="nw")
         self.version_option_check.grid(row=2, column=51, padx=10, pady=(30, 0), sticky="sw")

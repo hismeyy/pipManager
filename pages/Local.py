@@ -20,6 +20,10 @@ class Local:
         self.update_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
         self.processing.grid(row=0, column=1, padx=130, pady=10, sticky="w")
         self.py_list.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        vsb = ttk.Scrollbar(self.py_list, orient="vertical", command=self.py_list.yview,
+                            style="Modern.Vertical.TScrollbar")
+        vsb.pack(side="right", fill="y")
+        self.py_list.configure(yscrollcommand=vsb.set)
         # py_list
         self.py_list.heading("c1", text="Pip包", anchor="w")
         self.py_list.heading("c2", text="当前版本", anchor="w")
