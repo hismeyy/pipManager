@@ -1,4 +1,3 @@
-import queue
 import threading
 import tkinter as tk
 
@@ -14,7 +13,7 @@ class Remote:
         # 组件
         self.install_button = ttk.Button(self.frame, text="安装")
         self.refresh_button = ttk.Button(self.frame, text="刷新")
-        self.processing = ttk.Label(self.frame, text="", foreground="red")
+        self.processing = ttk.Label(self.frame, text="提示信息...", foreground="red")
         self.py_list = ttk.Treeview(self.frame, columns="c1", show="headings")
         self.introduction_label = ttk.LabelFrame(self.frame, text="简介")
         self.introduction_content_label = ttk.Label(self.introduction_label, text="这是一个简介")
@@ -27,10 +26,6 @@ class Remote:
         self.py_list.grid(row=1, column=0, columnspan=50, rowspan=3, padx=10, pady=10, sticky="nsew")
         self.py_list.heading("c1", text="Pip包", anchor="w")
         self.py_list.column("c1", width=300)
-        vsb = ttk.Scrollbar(self.py_list, orient="vertical", command=self.py_list.yview,
-                            style="Modern.Vertical.TScrollbar")
-        vsb.pack(side="right", fill="y")
-        self.py_list.configure(yscrollcommand=vsb.set)
         self.introduction_label.grid(row=1, column=51, padx=10, pady=0, sticky="nsew")
         self.introduction_content_label.grid(row=1, column=41, padx=10, pady=10, sticky="nw")
         self.version_option_check.grid(row=2, column=51, padx=10, pady=(30, 0), sticky="sw")
@@ -44,28 +39,15 @@ class Remote:
         self.frame.columnconfigure(51, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
-        self.queue = queue.Queue()
-
-        self.frame.after(100, self.set_py_list)
-
     def set_py_list(self):
-        """
-        更新py包list
-        :return:
-        """
-        while not self.queue.empty():
-            item = self.queue.get()
-            self.py_list.insert("", tk.END, values=item)
-
-    def get_py_list(self):
         """
         设置py包list
         :return:
         """
         items = self.pip_api.get_py_package_list_api()
         for item in items:
-            self.queue.put(item)
+            self.py_list.insert("", tk.END, values=item)
 
     def get_remote(self):
-        set_py_list_thread = threading.Thread(target=self.get_py_list)
+        set_py_list_thread = threading.Thread(target=self.set_py_list)
         set_py_list_thread.start()
