@@ -1,3 +1,5 @@
+import threading
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
@@ -10,7 +12,6 @@ root = ttk.Window(themename="cosmo", alpha=0.9)
 root.title("PiPManager")
 root.geometry("600x500")
 root.minsize(600, 500)
-
 root.place_window_center()
 
 notebook_titles = ["本地", "远程", "设置", "关于"]
@@ -28,10 +29,14 @@ for title in notebook_titles:
     note.add(frame, text=title)
 
     if title == "本地":
-        Local(frame).get_local()
-    elif title == '关于':
-        About(frame).get_about()
+        local = Local(frame)
+        local_thread = threading.Thread(target=local.get_local)
+        local_thread.start()
     elif title == '远程':
         Remote(frame).get_remote()
+    elif title == '设置':
+        pass
+    elif title == '关于':
+        About(frame).get_about()
 
 root.mainloop()
