@@ -1,3 +1,4 @@
+import queue
 import threading
 import tkinter as tk
 
@@ -43,17 +44,28 @@ class Remote:
         self.frame.columnconfigure(51, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
+        self.queue = queue.Queue()
+
+        self.frame.after(100, self.set_py_list)
+
     def set_py_list(self):
+        """
+        更新py包list
+        :return:
+        """
+        while not self.queue.empty():
+            item = self.queue.get()
+            self.py_list.insert("", tk.END, values=item)
+
+    def get_py_list(self):
         """
         设置py包list
         :return:
         """
         items = self.pip_api.get_py_package_list_api()
         for item in items:
-            self.py_list.insert("", tk.END, values=item)
-        self.processing.configure(text="")
+            self.queue.put(item)
 
     def get_remote(self):
-        self.processing.configure(text="正在加载数据...")
-        set_py_list_thread = threading.Thread(target=self.set_py_list)
+        set_py_list_thread = threading.Thread(target=self.get_py_list)
         set_py_list_thread.start()
