@@ -1,12 +1,15 @@
 import gc
 import json
+import os
 import re
 import subprocess
-import threading
+import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 
 class PipApi:
@@ -90,8 +93,16 @@ class PipApi:
         }
 
         cache_json = json.dumps(cache)
-        with open(file_path, "w") as file:
-            file.write(cache_json)
+
+        # Writing to a temporary file first to ensure data integrity
+        with tempfile.NamedTemporaryFile('w', delete=False) as temp_file:
+            temp_file.write(cache_json)
+            temp_file.flush()
+            os.fsync(temp_file.fileno())
+            temp_file_path = temp_file.name
+
+        # Replace the original file with the temp file
+        os.replace(temp_file_path, file_path)
 
     @staticmethod
     def __read_py_packages_cache(file_path):
@@ -100,34 +111,91 @@ class PipApi:
         :param file_path:
         :return:
         """
+        if not os.path.exists(file_path):
+            return None, []
+
         try:
             with open(file_path, "r") as file:
                 cache_json = file.read()
                 cache = json.loads(cache_json)
                 return cache["date"], cache["packages"]
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             return None, []
+
+    # @staticmethod
+    # def __write_py_packages_cache(py_package_list, file_path):
+    #     """
+    #     写入缓存
+    #     :param py_package_list:
+    #     :param file_path:
+    #     :return:
+    #     """
+    #     cache = {
+    #         "date": PipApi.get_now_date(),
+    #         "packages": py_package_list
+    #     }
+    #
+    #     cache_json = json.dumps(cache)
+    #     with open(file_path, "w") as file:
+    #         file.write(cache_json)
+    #
+    # @staticmethod
+    # def __read_py_packages_cache(file_path):
+    #     """
+    #     读取缓存
+    #     :param file_path:
+    #     :return:
+    #     """
+    #     try:
+    #         with open(file_path, "r") as file:
+    #             cache_json = file.read()
+    #             cache = json.loads(cache_json)
+    #             return cache["date"], cache["packages"]
+    #     except FileNotFoundError:
+    #         return None, []
 
     def get_py_packages_and_write_cache(self):
         """
         获取py包列表并且写入缓存
         :return:
         """
-        get_py_package_thread = None
 
         def get_py_package_thread_method():
             self.py_package_list = self.__get_py_packages(self.pip_url)
 
         def write_py_packages_cache_thread_method():
-            get_py_package_thread.join()
             if len(self.py_package_list) != 0:
                 self.__write_py_packages_cache(self.py_package_list, self.file_path)
                 gc.collect(generation=2)
 
-        get_py_package_thread = threading.Thread(target=get_py_package_thread_method)
-        get_py_package_thread.start()
-        write_py_package_cache_thread = threading.Thread(target=write_py_packages_cache_thread_method)
-        write_py_package_cache_thread.start()
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = [executor.submit(get_py_package_thread_method)]
+            futures[0].result()  # Ensure the first task completes before starting the next
+            futures.append(executor.submit(write_py_packages_cache_thread_method))
+
+            for future in tqdm(futures, desc="Processing", total=2):
+                future.result()
+
+    # def get_py_packages_and_write_cache(self):
+    #     """
+    #     获取py包列表并且写入缓存
+    #     :return:
+    #     """
+    #     get_py_package_thread = None
+    #
+    #     def get_py_package_thread_method():
+    #         self.py_package_list = self.__get_py_packages(self.pip_url)
+    #
+    #     def write_py_packages_cache_thread_method():
+    #         get_py_package_thread.join()
+    #         if len(self.py_package_list) != 0:
+    #             self.__write_py_packages_cache(self.py_package_list, self.file_path)
+    #             gc.collect(generation=2)
+    #
+    #     get_py_package_thread = threading.Thread(target=get_py_package_thread_method)
+    #     get_py_package_thread.start()
+    #     write_py_package_cache_thread = threading.Thread(target=write_py_packages_cache_thread_method)
+    #     write_py_package_cache_thread.start()
 
     def get_py_package_list_api(self):
         """
