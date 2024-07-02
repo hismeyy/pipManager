@@ -17,7 +17,6 @@ class PipApi:
     def __init__(self):
         self.pip = 'pip'
         self.pip_url = 'https://pypi.org/simple'
-        self.py_package_list = []
         self.file_path = './data/py_package.cache'
 
     def get_pip_list_api(self):
@@ -92,6 +91,7 @@ class PipApi:
         cache_json = json.dumps(cache)
         with open(file_path, "w") as file:
             file.write(cache_json)
+        gc.collect()
 
     @staticmethod
     def __read_py_packages_cache(file_path):
@@ -108,45 +108,22 @@ class PipApi:
         except FileNotFoundError:
             return None, []
 
-    def get_py_packages_and_write_cache(self):
-        """
-        获取py包列表并且写入缓存
-        :return:
-        """
-        get_py_package_thread = None
-
-        def get_py_package_thread_method():
-            self.py_package_list = self.__get_py_packages(self.pip_url)
-
-        def write_py_packages_cache_thread_method():
-            get_py_package_thread.join()
-            if len(self.py_package_list) != 0:
-                self.__write_py_packages_cache(self.py_package_list, self.file_path)
-                gc.collect(generation=2)
-
-        get_py_package_thread = threading.Thread(target=get_py_package_thread_method)
-        get_py_package_thread.start()
-        write_py_package_cache_thread = threading.Thread(target=write_py_packages_cache_thread_method)
-        write_py_package_cache_thread.start()
-
     def get_py_package_list_api(self):
         """
-        获取py包列表
-        :return:
+        获取py包列表，从缓存中读取或重新加载
+        :return: py包列表
         """
 
         # 读取缓存
-        date, self.py_package_list = self.__read_py_packages_cache(self.file_path)
+        date, package_list = self.__read_py_packages_cache(self.file_path)
 
-        # 第一次加载
-        if date is None and len(self.py_package_list) == 0:
-            self.get_py_packages_and_write_cache()
+        # 如果缓存为空或者过期，则重新加载
+        if date is None or date != PipApi.get_now_date():
+            package_list = self.__get_py_packages(self.pip_url)
+            write_thread = threading.Thread(target=self.__write_py_packages_cache, args=(package_list, self.file_path))
+            write_thread.start()
 
-        # 缓存过期，重新加载
-        if date is not None and date != PipApi.get_now_date():
-            self.get_py_packages_and_write_cache()
-
-        return self.py_package_list
+        return package_list
 
     def version_key(self, version):
         # 分割版本号成各个部分，使用正则表达式匹配数字和字母
