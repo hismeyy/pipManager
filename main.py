@@ -60,9 +60,7 @@ class MainWin():
 
         self.close_waiting_window()
         self.root.deiconify()
-        self.root.withdraw()
         self.root.place_window_center()
-        self.root.deiconify()
 
     def show_waiting_window(self):
         self.waiting_window = ttk.Toplevel()
