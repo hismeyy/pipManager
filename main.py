@@ -15,8 +15,10 @@ class MainWin():
         self.root.title("PiPManager")
         self.root.geometry("600x500")
         self.root.minsize(600, 500)
-        self.root.place_window_center()
+
         self.root.attributes("-disabled", True)
+        self.root.withdraw()
+        self.root.iconify()
 
         self.notebook_titles = ["本地", "远程", "设置", "关于"]
 
@@ -29,6 +31,7 @@ class MainWin():
         self.note.pack(fill=BOTH, expand=True)  # 修改为全局填充
 
         threading.Thread(target=self.init_notebook).start()
+
         self.show_waiting_window()
 
     def start(self):
@@ -62,6 +65,8 @@ class MainWin():
             thread.join()
 
         self.close_waiting_window()
+        self.root.deiconify()
+        self.root.place_window_center()
 
     def show_waiting_window(self):
         self.waiting_window = ttk.Toplevel()
