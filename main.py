@@ -15,23 +15,17 @@ class MainWin():
         self.root.title("PiPManager")
         self.root.geometry("600x500")
         self.root.minsize(600, 500)
-
         self.root.attributes("-disabled", True)
         self.root.withdraw()
         self.root.iconify()
-
         self.notebook_titles = ["本地", "远程", "设置", "关于"]
-
         # 本地：用于浏览，操作本地的py包，可以进行查看，搜索，卸载，升级等功能
         # 远程：用于获取可安装的py包，可以进行查看，搜索，安装等功能
         # 设置：设置python环境，pip镜像，语言等
         # 关于：关于PiPManager
-
         self.note = ttk.Notebook()
         self.note.pack(fill=BOTH, expand=True)  # 修改为全局填充
-
         threading.Thread(target=self.init_notebook).start()
-
         self.show_waiting_window()
 
     def start(self):
@@ -66,7 +60,9 @@ class MainWin():
 
         self.close_waiting_window()
         self.root.deiconify()
+        self.root.withdraw()
         self.root.place_window_center()
+        self.root.deiconify()
 
     def show_waiting_window(self):
         self.waiting_window = ttk.Toplevel()
