@@ -9,6 +9,7 @@ from utils.PipApi import PipApi
 
 
 class Remote:
+
     def __init__(self, frame):
         self.pip_api = PipApi()
         self.frame = frame
@@ -24,7 +25,8 @@ class Remote:
         self.introduction_label = ttk.LabelFrame(self.frame, text="简介")
         self.introduction_content_label = ttk.Label(self.introduction_label, text="这是一个简介")
         self.version_option_check = ttk.Checkbutton(self.frame, text="指定版本")
-        self.version_list_combobox = ttk.Combobox(self.frame, values=["1.0.0"], state="readonly")
+        self.version_list_combobox = ttk.Combobox(self.frame, values=["1.0.0"])
+        self.version_list_combobox.set(value="选择")
 
         # 布局
         self.install_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")

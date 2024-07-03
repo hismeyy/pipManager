@@ -6,6 +6,7 @@ from ttkbootstrap.constants import *
 from pages.About import About
 from pages.Local import Local
 from pages.Remote import Remote
+from pages.Setting import Setting
 
 
 class MainWin():
@@ -48,7 +49,7 @@ class MainWin():
                 remote_thread.start()
                 thread_list.append(remote_thread)
             elif title == '设置':
-                pass
+                Setting(frame)
             elif title == '关于':
                 about = About(frame)
                 about_thread = threading.Thread(target=about.get_about())
