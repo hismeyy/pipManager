@@ -14,12 +14,12 @@ class Remote:
         self.pip_api = PipApi()
         self.frame = frame
         # 组件
-        self.install_button = ttk.Button(self.frame, text="安装")
+        self.install_button = ttk.Button(self.frame, text="安装", command=self.install_package)
         self.search_button = ttk.Button(self.frame, text="搜索")
         self.processing = ttk.Label(self.frame, text="", foreground="red")
         self.entry = ttk.Entry(self.frame, width=30, style=PRIMARY)
 
-        self.py_list = ttk.Treeview(self.frame, columns="c1", show="headings")
+        self.py_list = ttk.Treeview(self.frame, columns="c1", show="headings", selectmode="browse")
         self.vsb = ttk.Scrollbar(self.py_list, orient="vertical", command=self.py_list.yview)
 
         self.introduction_label = ttk.LabelFrame(self.frame, text="简介")
@@ -57,6 +57,12 @@ class Remote:
         self.queue = queue.Queue()
 
         self.frame.after(100, self.set_py_list)
+
+    def install_package(self):
+        selected_item = self.py_list.selection()
+        item_values = self.py_list.item(selected_item[0], "values")
+        self.pip_api.install_package_api(item_values[0])
+
 
     def set_py_list(self):
         """
