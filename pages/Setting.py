@@ -1,4 +1,5 @@
 import re
+import subprocess
 import tkinter as tk
 from tkinter import filedialog
 
@@ -22,9 +23,10 @@ class Setting:
         self.pip_mirror_label = ttk.Label(self.py_setting, text="设置PiP镜像源：", style="primary")
         self.entry_url = ttk.Entry(self.py_setting, width=43, style=PRIMARY)
 
-        self.ping_button = ttk.Button(self.py_setting, text="测试PiP镜像源", command=self.process_url,
+        self.ping_button = ttk.Button(self.py_setting, text="测试PiP镜像源", command=self.test_pip_url,
                                       style="success-outline")
         self.ping_result_label = ttk.Label(self.py_setting, text="", foreground="red")
+        self.set_pip_url_button = ttk.Button(self.py_setting, text="设置镜像源", command=self.set_pip_url)
 
         selected_theme = tk.StringVar()
         # 主题
@@ -58,7 +60,7 @@ class Setting:
         self.entry_url.grid(row=1, column=1, padx=5, pady=10, sticky="w")
         self.ping_button.grid(row=1, column=2, padx=5, pady=10, sticky="w")
         self.ping_result_label.grid(row=2, column=1, padx=5, pady=0, sticky="w")
-
+        self.set_pip_url_button.grid(row=1, column=3, padx=5, pady=10, sticky="w")
         self.theme_choose_label.grid(row=3, column=0, padx=5, pady=20, sticky="w")
         self.theme_choose_list.grid(row=3, column=1, padx=5, pady=20, sticky="w")
 
@@ -77,15 +79,44 @@ class Setting:
         time = requests.get(url, timeout=1).elapsed.total_seconds()
         return time
 
-    def process_url(self):
+    def check_url(self):
         url = self.entry_url.get()
         if url == "":
-            self.ping_result_label.config(text="请输入地址")
+            return 0
         else:
             url_pattern = re.compile(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
             if url_pattern.match(url):
-                self.ping_result_label.config(text="")
                 result = self.ping(url)
-                self.ping_result_label.config(text=f"{result}s")
+                return result
             else:
+                return 1
+
+    def test_pip_url(self):
+        check_url_return = self.check_url()
+        if check_url_return == 0:
+            self.ping_result_label.config(text="请输入地址")
+        else:
+            if check_url_return == 1:
                 self.ping_result_label.config(text="请输入正确的地址")
+            else:
+                self.ping_result_label.config(text="")
+                self.ping_result_label.config(text=f"{check_url_return}s")
+
+    def set_pip_url(self):
+        check_url_return = self.check_url()
+        if check_url_return == 0:
+            self.ping_result_label.config(text="请输入地址")
+        else:
+            if check_url_return == 1:
+                self.ping_result_label.config(text="请输入正确的地址")
+            else:
+                try:
+                    subprocess.run(f'{self.entry_file.get()} -m pip config set global.index-url {self.entry_url.get()}')
+                    self.ping_result_label.config(text="")
+                    self.ping_result_label.config(text="设置成功")
+                except subprocess.CalledProcessError as e:
+                    self.ping_result_label.config(text="设置失败")
+                    print(f"Setting pip index URL failed with error: {e}")
+                except Exception as e:
+                    self.ping_result_label.config(text="设置失败")
+                    print(e)
