@@ -17,7 +17,7 @@ class Setting:
         self.entry_var = tk.StringVar()
         self.file_choose_button = ttk.Button(self.py_setting, text="python解释器", command=self.file_path,
                                              style="outline")
-        self.entry_file = ttk.Entry(self.py_setting, width=60, style=PRIMARY, state="readonly",
+        self.entry_file = ttk.Entry(self.py_setting, width=73, style=PRIMARY, state="readonly",
                                     textvariable=self.entry_var)
 
         self.pip_mirror_label = ttk.Label(self.py_setting, text="设置PiP镜像源：", style="primary")
@@ -53,14 +53,15 @@ class Setting:
         self.py_setting.grid(row=1, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         self.file_choose_button.grid(row=0, column=0, padx=5, pady=10, sticky="w")
-
-        self.entry_file.grid(row=0, column=1, columnspan=2, padx=5, pady=10, sticky="w")
+        self.entry_file.grid(row=0, column=1, columnspan=3, padx=5, pady=10, sticky="w")
 
         self.pip_mirror_label.grid(row=1, column=0, padx=5, pady=10, sticky="w")
         self.entry_url.grid(row=1, column=1, padx=5, pady=10, sticky="w")
         self.ping_button.grid(row=1, column=2, padx=5, pady=10, sticky="w")
-        self.ping_result_label.grid(row=2, column=1, padx=5, pady=0, sticky="w")
         self.set_pip_url_button.grid(row=1, column=3, padx=5, pady=10, sticky="w")
+
+        self.ping_result_label.grid(row=2, column=1, padx=5, pady=0, sticky="w")
+
         self.theme_choose_label.grid(row=3, column=0, padx=5, pady=20, sticky="w")
         self.theme_choose_list.grid(row=3, column=1, padx=5, pady=20, sticky="w")
 
@@ -69,6 +70,7 @@ class Setting:
         self.frame.columnconfigure(0, weight=0)
         self.frame.columnconfigure(1, weight=0)
         self.frame.columnconfigure(2, weight=1)
+        self.frame.columnconfigure(3, weight=1)
 
     def file_path(self):
         self.choose_file_path = filedialog.askopenfilename(filetypes=[("Executable files", "*.exe")])
