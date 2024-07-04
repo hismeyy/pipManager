@@ -17,11 +17,11 @@ class Setting:
         self.entry_var = tk.StringVar()
         self.file_choose_button = ttk.Button(self.py_setting, text="python解释器", command=self.file_path,
                                              style="outline")
-        self.entry_file = ttk.Entry(self.py_setting, width=73, style=PRIMARY, state="readonly",
+        self.entry_file = ttk.Entry(self.py_setting, width=63, style=PRIMARY, state="readonly",
                                     textvariable=self.entry_var)
 
         self.pip_mirror_label = ttk.Label(self.py_setting, text="设置PiP镜像源：", style="primary")
-        self.entry_url = ttk.Entry(self.py_setting, width=43, style=PRIMARY)
+        self.entry_url = ttk.Entry(self.py_setting, width=33, style=PRIMARY)
 
         self.ping_button = ttk.Button(self.py_setting, text="测试PiP镜像源", command=self.test_pip_url,
                                       style="success-outline")
@@ -70,7 +70,6 @@ class Setting:
         self.frame.columnconfigure(0, weight=0)
         self.frame.columnconfigure(1, weight=0)
         self.frame.columnconfigure(2, weight=1)
-        self.frame.columnconfigure(3, weight=1)
 
     def file_path(self):
         self.choose_file_path = filedialog.askopenfilename(filetypes=[("Executable files", "*.exe")])
