@@ -14,8 +14,8 @@ class MainWin():
         # 初始化主窗口
         self.root = ttk.Window(themename="cosmo", alpha=0.95)
         self.root.title("PiPManager")
-        self.root.geometry("700x500")
-        self.root.minsize(700, 500)
+        self.root.geometry("800x500")
+        self.root.minsize(800, 500)
         self.root.attributes("-disabled", True)
         self.root.withdraw()
         self.root.iconify()
